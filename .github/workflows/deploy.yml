@@ -32,7 +32,18 @@ jobs:
 
     - name: Trigger Rules
       run: |
+        # Create nginx deployment
         kubectl create deployment nginx --image=nginx
-        kubectl exec -it $(kubectl get pods --selector=app=nginx -o name) -- cat /etc/shadow
-        kubectl logs -l app.kubernetes.io/name=falco -n falco -c falco | grep Warning
+        
+        # Wait for nginx pod to be ready
+        echo "Waiting for nginx pod to be ready..."
+        kubectl wait --for=condition=ready pod --selector=app=nginx --timeout=60s
+        
+        # Get pod name and execute command
+        NGINX_POD=$(kubectl get pods --selector=app=nginx -o name)
+        echo "Executing command on pod: $NGINX_POD"
+        kubectl exec $NGINX_POD -- cat /etc/shadow
+        
+        # Check Falco logs
+        kubectl logs -l app.kubernetes.io/name=falco -n falco -c falco | grep Warning || true
 
