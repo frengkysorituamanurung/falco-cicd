@@ -26,11 +26,13 @@ jobs:
         helm install --replace falco --namespace falco --create-namespace --set tty=true falcosecurity/falco
         kubectl get pods -n falco
         kubectl wait pods --for=condition=Ready --all -n falco --timeout=120s || true
+        kubectl get pods -n falco
+        kubectl -n falco get svc
+        sleep 30
 
     - name: Trigger Rules
       run: |
-        sleep 60
         kubectl create deployment nginx --image=nginx
-        kubectl wait deployment nginx --for condition=Available=True
-        kubectl logs -l app.kubernetes.io/name=falco -n falco -c falco | grep Warning || true
+        kubectl exec -it $(kubectl get pods --selector=app=nginx -o name) -- cat /etc/shadow
+        kubectl logs -l app.kubernetes.io/name=falco -n falco -c falco | grep Warning
 
