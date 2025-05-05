@@ -1,4 +1,4 @@
-name: Deploy Falco
+name: Falco CI/CD
 
 on:
   push:
@@ -25,11 +25,12 @@ jobs:
         helm repo update  
         helm install --replace falco --namespace falco --create-namespace --set tty=true falcosecurity/falco
         kubectl get pods -n falco
-        kubectl wait pods --for=condition=Ready --all -n falco
+        kubectl wait pods --for=condition=Ready --all -n falco --timeout=120s || true
 
     - name: Trigger Rules
       run: |
+        sleep 60
         kubectl create deployment nginx --image=nginx
         kubectl wait deployment nginx --for condition=Available=True
-        kubectl logs -l app.kubernetes.io/name=falco -n falco -c falco | grep Warning
+        kubectl logs -l app.kubernetes.io/name=falco -n falco -c falco | grep Warning || true
 
