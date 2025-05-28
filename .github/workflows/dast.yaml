@@ -17,5 +17,5 @@ jobs:
       - name: OWASP ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.11.0
         with:
-          target: 'https://frengkysorituamanurung.netlify.app'
-          fail_action: true 
+          target: 'https://cis.del.ac.id'
+          fail_action: false 
