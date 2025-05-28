@@ -1,0 +1,21 @@
+name: OWASP ZAP Baseline Scan
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  zap_scan:
+    runs-on: ubuntu-latest
+    name: Scan my web application
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: OWASP ZAP Baseline Scan
+        uses: OWASP/zap-baseline-scan@v0.1.1
+        with:
+          target: 'https://frengkysorituamanurung.netlify.app'
+          fail_action: true 
